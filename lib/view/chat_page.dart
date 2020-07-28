@@ -24,7 +24,16 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-
+      body: Container(
+        child: Row(
+          children: <Widget>[
+            Container(
+              child: TextField(
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

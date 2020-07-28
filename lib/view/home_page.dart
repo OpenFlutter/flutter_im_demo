@@ -7,6 +7,7 @@ import 'package:flutter_im_demo/mqtt/MQTTManager.dart';
 import 'package:flutter_im_demo/view/chat_page.dart';
 import 'package:flutter_im_demo/widget/argonButton.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,9 +21,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  String _community = "";
+  String _userName = "";
 
   MQTTAppState currentAppState;
   MQTTManager manager;
+
+  TextEditingController _communityController = new TextEditingController();
+  TextEditingController _userNameController = new TextEditingController();
 
   @override
   void initState() {
@@ -72,17 +78,43 @@ class _HomePageState extends State<HomePage> {
                     child: Image.asset("assets/image/flutter-logo.png"),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 200.h),
+                    margin: EdgeInsets.only(top: 100.h),
                     width: 600.w,
                     child: TextField(
+                      controller: _communityController,
                       keyboardAppearance: Brightness.light,
                       cursorColor: Colors.white,
+                      style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
-                        labelText: "请输入你的昵称",
+                        contentPadding: const EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
+                        labelText: "Community Name",
                         labelStyle: TextStyle(
-                          color: Colors.white
+                            color: Colors.white
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 100.h),
+                    width: 600.w,
+                    child: TextField(
+                      controller: _userNameController,
+                      keyboardAppearance: Brightness.light,
+                      cursorColor: Colors.white,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
+                        labelText: "User Name",
+                        labelStyle: TextStyle(
+                            color: Colors.white
                         ),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
@@ -101,16 +133,17 @@ class _HomePageState extends State<HomePage> {
                       width: MediaQuery.of(context).size.width * 0.45,
                       onTap: (startLoading, stopLoading, btnState) {
                         if (btnState == ButtonState.Idle) {
-                          startLoading();
-
-                          _connectMQTT();
-
+                          if(_checkInfo())
+                          {
+                            startLoading();
+                            _connectMQTT();
+                          }
                         } else {
                           stopLoading();
                         }
                       },
                       child: Text(
-                        "登录",
+                        "Login",
                         style: TextStyle(
                             color: Colors.blue,
                             fontSize: 18,
@@ -137,7 +170,7 @@ class _HomePageState extends State<HomePage> {
   _prepareStateMessageFrom(MQTTAppConnectionState state) {
     switch (state) {
       case MQTTAppConnectionState.connected:
-        debugPrint("已连接");
+        debugPrint("MQTT Connected");
         Future.delayed(Duration(milliseconds: 200)).then((e) {
           Navigator.push(context, MaterialPageRoute(
               builder: (context) => ChatPage()
@@ -145,16 +178,49 @@ class _HomePageState extends State<HomePage> {
         });
         break;
       case MQTTAppConnectionState.connecting:
-        debugPrint("正在连接");
+        debugPrint("MQTT Connecting");
         break;
       case MQTTAppConnectionState.disconnected:
-        debugPrint("未连接");
+        debugPrint("MQTT Disconnected");
         break;
+    }
+  }
+
+  bool _checkInfo(){
+    _community = _communityController.text ?? "";
+    _userName = _userNameController.text ?? "";
+
+    if(_community != "" && _userName != "")
+    {
+      return true;
+    }
+    else
+    {
+      if(_community == "")
+      {
+        Fluttertoast.showToast(
+            msg: "Please check a community",
+            gravity: ToastGravity.TOP,
+            toastLength: Toast.LENGTH_LONG,
+            backgroundColor: Colors.white38
+        );
+      }
+      else
+      {
+        Fluttertoast.showToast(
+            msg: "Please confirm your user name",
+            gravity: ToastGravity.TOP,
+            toastLength: Toast.LENGTH_LONG,
+            backgroundColor: Colors.white38
+        );
+      }
+      return false;
     }
   }
 
   _connectMQTT()
   {
+
     String osPrefix = 'Flutter_iOS';
     if(Platform.isAndroid){
       osPrefix = 'Flutter_Android';
@@ -167,6 +233,7 @@ class _HomePageState extends State<HomePage> {
         state: currentAppState);
     manager.initializeMQTTClient();
     manager.connect();
+
   }
 
 
