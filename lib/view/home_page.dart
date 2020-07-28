@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
     _prepareStateMessageFrom(currentAppState.getAppConnectionState);
     // TODO: implement build
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomPadding: false,
       body: Stack(
         children: <Widget>[
           Container(
@@ -172,8 +172,8 @@ class _HomePageState extends State<HomePage> {
       case MQTTAppConnectionState.connected:
         debugPrint("MQTT Connected");
         Future.delayed(Duration(milliseconds: 200)).then((e) {
-          Navigator.push(context, MaterialPageRoute(
-              builder: (context) => ChatPage()
+          Navigator.pushReplacement(context, MaterialPageRoute(
+              builder: (context) => ChatPage(community: _communityController.text,)
           ));
         });
         break;
