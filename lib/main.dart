@@ -5,7 +5,14 @@ import 'package:provider/provider.dart';
 import 'mqtt/MQTTAppState.dart';
 
 void main() {
-  runApp(MyApp());
+  final MQTTAppState mqttAppState = MQTTAppState();
+
+  runApp(
+      ChangeNotifierProvider.value(
+        value: mqttAppState,
+        child: MyApp(),
+      ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -30,10 +37,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home:ChangeNotifierProvider<MQTTAppState>(
-        create: (_) => MQTTAppState(),
-        child: HomePage(),
-      ),
+      home: HomePage()
     );
   }
 }

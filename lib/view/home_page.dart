@@ -173,7 +173,12 @@ class _HomePageState extends State<HomePage> {
         debugPrint("MQTT Connected");
         Future.delayed(Duration(milliseconds: 200)).then((e) {
           Navigator.pushReplacement(context, MaterialPageRoute(
-              builder: (context) => ChatPage(community: _communityController.text,)
+              builder: (context){
+                return ChangeNotifierProvider<MQTTAppState>.value(
+                  value: currentAppState,
+                  child: ChatPage(mqttManager: manager,community: _community,),
+                );
+              }
           ));
         });
         break;
