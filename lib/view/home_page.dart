@@ -176,7 +176,7 @@ class _HomePageState extends State<HomePage> {
               builder: (context){
                 return ChangeNotifierProvider<MQTTAppState>.value(
                   value: currentAppState,
-                  child: ChatPage(mqttManager: manager,community: _community,),
+                  child: ChatPage(mqttManager: manager,community: _community,userName: _userName,),
                 );
               }
           ));
@@ -234,7 +234,7 @@ class _HomePageState extends State<HomePage> {
     manager = MQTTManager(
         host: "test.mosquitto.org",
         topic: "flutter/amp/cool",
-        identifier: osPrefix,
+        identifier: _userName,
         state: currentAppState);
     manager.initializeMQTTClient();
     manager.connect();
