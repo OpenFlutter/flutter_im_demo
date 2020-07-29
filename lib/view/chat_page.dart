@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 class ChatModel {
   bool isMineMessage;
+  String user;
   String message;
 }
 
@@ -46,9 +47,10 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(240, 240, 240, 1),
       appBar: AppBar(
+        brightness: Brightness.light,
         elevation: 0.0,
-        backgroundColor: Colors.cyan,
-        title: Text(widget.community),
+        backgroundColor: Colors.white38,
+        title: Text(widget.community,style: TextStyle(color: Colors.black),),
       ),
       body: Consumer<MQTTAppState>(
           builder: (context, appState, widget){
@@ -107,6 +109,7 @@ class _ChatPageState extends State<ChatPage> {
           {
             ChatModel chatModel = ChatModel();
             chatModel.isMineMessage = true;
+            chatModel.user = chatMainMessage[0].toString();
             chatModel.message = chatMainMessage[1].toString();
             chatHistoryList.add(chatModel);
           }
@@ -119,27 +122,80 @@ class _ChatPageState extends State<ChatPage> {
           }
       }
     return Container(
-          width: 700.w,
+          width: 800.w,
           height: 1000.h,
           child: ListView.builder(
             itemCount: chatHistoryList.length,
             itemBuilder: (context, index){
-              return Container(
-                decoration: BoxDecoration(
-                  color: chatHistoryList[index].isMineMessage ? Color.fromRGBO(169, 232, 122, 1) : Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(5.0))
-                ),
-                height: 80.h,
-                margin: chatHistoryList[index].isMineMessage ? EdgeInsets.only(left: 400.w, top: 20.h, right: 50.w) : EdgeInsets.only(left: 50.w, top: 20.h, right: 400.w),
-                child: Center(
-                  child: Text(chatMainMessage.length > 1 ? chatHistoryList[index].message : "",style: TextStyle(
-                    fontSize: 32.sp
-                  ),),
-                ),
-              );
+              return chatMainMessage.length > 1 ? _messageLine(index) : SizedBox();
             },
           ),
         );
+  }
+
+  Widget _messageLine(int i)
+  {
+    return chatHistoryList[i].isMineMessage ? Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.only(left: 20.w,right: 20.w),
+          decoration: BoxDecoration(
+              color: Color.fromRGBO(169, 232, 122, 1),
+              borderRadius: BorderRadius.all(Radius.circular(5.0))
+          ),
+          height: 70.h,
+          margin: EdgeInsets.only(top: 20.h),
+          child: Center(
+            child: Text(chatHistoryList[i].message,style: TextStyle(
+                fontSize: 32.sp
+            ),),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 20.h,left: 40.w,right: 40.w),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(5.0))
+          ),
+          height: 70.h,
+          width: 70.h,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5.0),
+            child: Image.asset(Platform.isIOS ? "assets/image/icon_2.JPG" : "assets/image/icon_1.JPG",fit: BoxFit.contain,)
+          ),
+        )
+      ],
+    ) : Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(top: 20.h,left: 40.w,right: 40.w),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(5.0))
+          ),
+          height: 70.h,
+          width: 70.h,
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(5.0),
+              child: Image.asset(Platform.isIOS ? "assets/image/icon_1.JPG" : "assets/image/icon_2.JPG",fit: BoxFit.contain,)
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.only(left: 20.w,right: 20.w),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(5.0))
+          ),
+          height: 70.h,
+          margin: EdgeInsets.only(top: 20.h),
+          child: Center(
+            child: Text(chatHistoryList[i].message,style: TextStyle(
+                fontSize: 32.sp
+            ),),
+          ),
+        ),
+      ],
+    );
   }
 
   void _publishMessage(String text) {

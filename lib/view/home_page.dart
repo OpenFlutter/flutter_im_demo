@@ -225,12 +225,6 @@ class _HomePageState extends State<HomePage> {
 
   _connectMQTT()
   {
-
-    String osPrefix = 'Flutter_iOS';
-    if(Platform.isAndroid){
-      osPrefix = 'Flutter_Android';
-    }
-
     manager = MQTTManager(
         host: "test.mosquitto.org",
         topic: "flutter/amp/cool",
