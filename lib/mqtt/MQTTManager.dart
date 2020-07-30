@@ -12,7 +12,7 @@ class MQTTManager{
   final String _host;
   final String _topic;
 
-  // Constructor
+  // 构造函数
   MQTTManager({
     @required String host,
     @required String topic,
@@ -29,29 +29,28 @@ class MQTTManager{
     _client.secure = false;
     _client.logging(on: true);
 
-    /// Add the successful connection callback
+    /// 连接成功回调
     _client.onConnected = onConnected;
     _client.onSubscribed = onSubscribed;
 
     final MqttConnectMessage connMess = MqttConnectMessage()
         .withClientIdentifier(_identifier)
-        .withWillTopic('willtopic') // If you set this you must set a will message
+        .withWillTopic('willtopic')
         .withWillMessage('My Will message')
-        .startClean() // Non persistent session for testing
+        .startClean()
         .withWillQos(MqttQos.atLeastOnce);
-    print('EXAMPLE::Mosquitto client connecting....');
+    print('MQTT 服务器连接中...');
     _client.connectionMessage = connMess;
-
   }
   // Connect to the host
   void connect() async{
     assert(_client != null);
     try {
-      print('EXAMPLE::Mosquitto start client connecting....');
+      print('MQTT 服务器连接中...');
       _currentState.setAppConnectionState(MQTTAppConnectionState.connecting);
       await _client.connect();
     } on Exception catch (e) {
-      print('EXAMPLE::client exception - $e');
+      print('MQTT 服务器报错 - $e');
       disconnect();
     }
   }
@@ -69,22 +68,22 @@ class MQTTManager{
 
   /// The subscribed callback
   void onSubscribed(String topic) {
-    print('EXAMPLE::Subscription confirmed for topic $topic');
+    print('正在订阅主题： $topic');
   }
 
   /// The unsolicited disconnect callback
   void onDisconnected() {
-    print('EXAMPLE::OnDisconnected client callback - Client disconnection');
+    print('MQTT 服务器断开');
     if (_client.connectionStatus.returnCode == MqttConnectReturnCode.noneSpecified) {
-      print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
+      print("MQTT服务器断开回调");
     }
     _currentState.setAppConnectionState(MQTTAppConnectionState.disconnected);
   }
 
-  /// The successful connect callback
+  /// 连接成功回调
   void onConnected() {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
-    print('EXAMPLE::Mosquitto client connected....');
+    print('MQTT 服务器连接成功！');
     _client.subscribe(_topic, MqttQos.atLeastOnce);
     _client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final MqttPublishMessage recMess = c[0].payload;
@@ -92,10 +91,8 @@ class MQTTManager{
       MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
       _currentState.setReceivedText(pt);
       print(
-          'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->');
+          '订阅主题是：<${c[0].topic}>,消息是： <-- $pt -->');
       print('');
     });
-    print(
-        'EXAMPLE::OnConnected client callback - Client connection was sucessful');
   }
 }

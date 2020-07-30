@@ -204,7 +204,7 @@ class _HomePageState extends State<HomePage> {
       if(_community == "")
       {
         Fluttertoast.showToast(
-            msg: "Please check a community",
+            msg: "请输入社区名称",
             gravity: ToastGravity.TOP,
             toastLength: Toast.LENGTH_LONG,
             backgroundColor: Colors.white38
@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage> {
       else
       {
         Fluttertoast.showToast(
-            msg: "Please confirm your user name",
+            msg: "请输入用户名",
             gravity: ToastGravity.TOP,
             toastLength: Toast.LENGTH_LONG,
             backgroundColor: Colors.white38
@@ -232,7 +232,6 @@ class _HomePageState extends State<HomePage> {
         state: currentAppState);
     manager.initializeMQTTClient();
     manager.connect();
-
   }
 
 
